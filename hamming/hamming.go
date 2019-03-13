@@ -7,15 +7,14 @@ import "errors"
 // locations, also known as the Hamming distance.
 func Distance(a, b string) (int, error) {
 	if len(a) != len(b) {
-		return 0, errors.New("strings must be the same length")
+		return -1, errors.New("strings must be the same length")
 	}
 
 	distance := 0
-	for i := 0; i < len(a); i++ {
+	for i := range a {
 		if a[i] != b[i] {
 			distance++
 		}
 	}
-
 	return distance, nil
 }
