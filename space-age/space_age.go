@@ -6,25 +6,17 @@ type Planet string
 
 // OrbitalPeriod returns how long a planet takes to orbit the sun in seconds.
 func (p Planet) OrbitalPeriod() float64 {
-	const earth = 31557600.0
-	switch p {
-	case "Mercury":
-		return earth * 0.2408467
-	case "Venus":
-		return earth * 0.61519726
-	case "Mars":
-		return earth * 1.8808158
-	case "Jupiter":
-		return earth * 11.862615
-	case "Saturn":
-		return earth * 29.447498
-	case "Uranus":
-		return earth * 84.016846
-	case "Neptune":
-		return earth * 164.79132
-	default:
-		return earth
+	var conversions = map[Planet]float64{
+		"Mercury": 0.2408467,
+		"Venus":   0.61519726,
+		"Earth":   1.0,
+		"Mars":    1.8808158,
+		"Jupiter": 11.862615,
+		"Saturn":  29.447498,
+		"Uranus":  84.016846,
+		"Neptune": 164.79132,
 	}
+	return 31557600 * conversions[p]
 }
 
 // Age calculates someone's age in terms of the years of a given planet.
