@@ -2,6 +2,7 @@
 package tree
 
 import (
+	"fmt"
 	"sort"
 )
 
@@ -21,14 +22,27 @@ type Record struct {
 func Build(records []Record) (*Node, error) {
 	var root *Node = nil
 	nodes := map[int]*Node{}
-	for _, record := range records {
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].ID < records[j].ID
+	})
+	for i, record := range records {
 		id, parentId := record.ID, record.Parent
-		node, ok := nodes[id]
-		if !ok {
-			node = &Node{ID: id}
-			nodes[id] = node
+		if i != id {
+			return nil, fmt.Errorf("nodes must be continuous")
 		}
-		if id == parentId {
+		if id == parentId && id != 0 {
+			return nil, fmt.Errorf("non-root node cannot have itself as parent")
+		}
+		_, ok := nodes[id]
+		if ok {
+			return nil, fmt.Errorf("duplicate node")
+		}
+		node := &Node{ID: id}
+		nodes[id] = node
+		if id == 0 {
+			if parentId != 0 {
+				return nil, fmt.Errorf("root node cannot have a parent")
+			}
 			root = node
 			continue
 		}
@@ -38,9 +52,9 @@ func Build(records []Record) (*Node, error) {
 			nodes[parentId] = parent
 		}
 		parent.Children = append(parent.Children, node)
-		sort.Slice(parent.Children, func(i, j int) bool {
-			return parent.Children[i].ID < parent.Children[j].ID
-		})
+	}
+	if root == nil && len(nodes) > 0 {
+		return nil, fmt.Errorf("no root node")
 	}
 	return root, nil
 }
